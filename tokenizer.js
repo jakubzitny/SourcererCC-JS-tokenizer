@@ -4,8 +4,8 @@ const fs = require('fs-extra-promise')
 const esprima = require('esprima')
 
 const MAIN_DELIMITER = '@#@'
-const COUNT_DELIMITER = ','
-const TOKEN_DELIMITER = '@@::@@'
+const COUNT_DELIMITER = '@@::@@'
+const TOKEN_DELIMITER = ','
 
 const filterTokens = function (type, token) {
   return token.type == type
