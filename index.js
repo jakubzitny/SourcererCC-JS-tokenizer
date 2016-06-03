@@ -10,6 +10,11 @@ const { base64FileName } = require('./util')
 
 const estools = require('estools')
 
+const TOKENIZER_SCOPE_FILE = 'file-scope'
+const TOKENIZER_SCOPE_FUNCTION = 'function-scope'
+
+const TOKENIZER_SCOPE = TOKENIZER_SCOPE_FUNCTION
+
 // TODO: estools map / filter / traverse (instead of walk)
 // - filter subfunctions from fuction asts somehow
 // - test on SCC
@@ -27,6 +32,14 @@ const regenerateFunctionCode = function(functionAst) {
 }
 
 const processFile = function(fileName, data) {
+  //let parentId = base64FileName(fileName) // TODO: incorporate repo name / hash
+  let parentId = 1
+  let blockId = 1
+
+  if (TOKENIZER_SCOPE === TOKENIZER_SCOPE_FILE) {
+    return immutable.List.of(tokenizer(data, parentId, blockId))
+  }
+
   options = {
     loc: true,
     range: true,
@@ -37,8 +50,6 @@ const processFile = function(fileName, data) {
 
   let functions = immutable.List()
   let functionTokens = immutable.List()
-  let parentId = base64FileName(fileName) // TODO: incorporate repo name / hash
-  let blockId = 1
   walk(fileAst, (node) => {
     if (node.type == 'FunctionExpression') {
       // const functionAstShallow = estools.map(node, (subNode) => {
@@ -59,6 +70,7 @@ const processFile = function(fileName, data) {
 
   return functionTokens
 }
+
 
 const outputFile = function(functionTokens) {
   functionTokens.forEach((f) => {
